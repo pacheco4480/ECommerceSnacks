@@ -1,6 +1,25 @@
-@ApiECommerce_HostAddress = http://localhost:5128
+@ApiECommerce_HostAddress = https://localhost:7018
 
-GET {{ApiECommerce_HostAddress}}/weatherforecast/
-Accept: application/json
+GET {{ApiECommerce_HostAddress}}/Categories
+
+###
+
+GET {{ApiECommerce_HostAddress}}/Products?Search=categoria&categoryId=2
+
+###
+
+GET {{ApiECommerce_HostAddress}}/api/Products/4
+
+###
+
+POST {{ApiECommerce_HostAddress}}/api/users/Register
+Content-Type: application/json
+
+{
+    "name": "string",
+    "email": "madasantos@yopmail.com",
+    "password": "123456",
+    "phone": "213652589"
+}
 
 ###
