@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiECommerce.Controllers
 {
@@ -76,6 +77,65 @@ namespace ApiECommerce.Controllers
                 user_id = currentUser.Id,
                 user_name = currentUser.Name
             });
+        }
+
+        [Authorize]
+        [HttpPost("uploadimage")]
+        public async Task<IActionResult> UploadUserPhoto(IFormFile image)
+        {
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(U => U.Email == userEmail);
+
+            if (user == null) 
+            {
+                return NotFound("Utilizador não encontrado");
+            }
+
+            if(image != null)
+            {
+                string uniqueFileName = $"{Guid.NewGuid().ToString()}_{image.FileName}";
+
+                string filePath = Path.Combine("wwwroot/userimages", uniqueFileName);
+
+                using(var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                user.UrlImage = $"/userimages/{uniqueFileName}";
+
+                await _appDbContext.SaveChangesAsync();
+                return Ok("Imagem enviada com sucesso");
+            }
+
+            return BadRequest("Nenhuma imagem enviada");
+        }
+
+
+        [Authorize]
+        [HttpGet("userimage")]
+        public async Task<IActionResult> GetUserImage()
+        {
+            //see if user is logged
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            //locate user
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if(user == null)
+            {
+                return NotFound("Utilizador não encontrado");
+            }
+
+            var userImage = await _appDbContext.Users
+                .Where(x => x.Email == userEmail)
+                .Select(x => new
+                {
+                    x.UrlImage,
+                })
+                .SingleOrDefaultAsync();
+
+            return Ok(userImage);
         }
     }
 }
