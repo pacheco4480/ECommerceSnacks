@@ -19,7 +19,7 @@ namespace ApiECommerce.Entities
 
         public int OrderId { get; set; }
 
-        public Order? Pedido { get; set; }
+        public Order? Order { get; set; }
 
         public int ProductId { get; set; }
 
