@@ -23,6 +23,6 @@ namespace ApiECommerce.Entities
 
         public int ProductId { get; set; }
 
-        public Product? Produto { get; set; }
+        public Product? Product { get; set; }
     }
 }
