@@ -79,6 +79,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    var context = app.Services.GetService<AppDbContext>();
+    await context!.Database.MigrateAsync();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    
+}
 
 //For use static image files on wwwroot
 app.UseStaticFiles();
